@@ -107,6 +107,24 @@ class VisualObservationModel(jit.ScriptModule):
     observation = self.conv4(hidden)
     return observation
 
+class ActionModel(jit.ScriptModule):
+  def __init__(self, belief_size, state_size,  hidden_size, vector_size = 64, action_size=150, activation_function='relu'):
+    super().__init__()
+    self.vector_size = vector_size 
+    self.act_fn = getattr(F, activation_function)
+    self.fc1 = nn.Linear(belief_size + state_size + vector_size, hidden_size)
+    self.fc2 = nn.Linear(hidden_size, hidden_size)
+    self.fc3 = nn.Linear(hidden_size, action_size)
+
+  @jit.script_method
+  def forward(self, belief, state, vector=None):
+    if self.vector_size==0:
+      hidden = self.act_fn(self.fc1(torch.cat([belief, state], dim=1)))
+    else:
+      hidden = self.act_fn(self.fc1(torch.cat([belief, state, vector], dim=1)))
+    hidden = self.act_fn(self.fc2(hidden))
+    reward = self.fc3(hidden).squeeze(dim=1)
+    return reward
 
 def ObservationModel(symbolic, observation_size, belief_size, state_size, embedding_size, activation_function='relu'):
   if symbolic:
@@ -129,6 +147,7 @@ class RewardModel(jit.ScriptModule):
     hidden = self.act_fn(self.fc2(hidden))
     reward = self.fc3(hidden).squeeze(dim=1)
     return reward
+
 
 
 class SymbolicEncoder(jit.ScriptModule):
