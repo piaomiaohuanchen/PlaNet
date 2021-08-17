@@ -117,7 +117,7 @@ class ActionModel(jit.ScriptModule):
     self.fc3 = nn.Linear(hidden_size, action_size)
 
   @jit.script_method
-  def forward(self, belief, state, vector=None):
+  def forward(self, belief, state, vector=torch.tensor(0)):
     if self.vector_size==0:
       hidden = self.act_fn(self.fc1(torch.cat([belief, state], dim=1)))
     else:

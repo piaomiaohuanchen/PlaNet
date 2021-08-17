@@ -67,9 +67,9 @@ class MineExperienceReplay(ExperienceReplay):
 
   def append(self, observation, action, reward, done):
 
-    self.vectors[self.idx] = observation['vector'].numpy()
-    self.observations[self.idx] = postprocess_observation(observation['pov'].numpy(), self.bit_depth)  # Decentre and discretise visual observations (to save memory)
-    self.actions[self.idx] = action.numpy()
+    self.vectors[self.idx] = observation['vector']
+    self.observations[self.idx] = observation['pov']  # Decentre and discretise visual observations (to save memory)
+    self.actions[self.idx] = action
     self.rewards[self.idx] = reward
     self.nonterminals[self.idx] = not done
     self.idx = (self.idx + 1) % self.size
