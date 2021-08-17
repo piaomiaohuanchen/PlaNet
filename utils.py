@@ -5,6 +5,26 @@ import plotly
 from plotly.graph_objs import Scatter
 from plotly.graph_objs.scatter import Line
 
+def absolute_file_paths(directory):
+    return [os.path.join(directory, path) for path in os.listdir(directory)]
+
+class Cycle_Replay:
+
+  def __init__(self, files, is_path=True) -> None:
+      self.step = 0
+      if is_path:
+        files = absolute_file_paths(files)
+      self.files = files[:]
+      self.size = len(files)
+  def get_name(self,num=1):
+    result = []
+    for i in range(num):
+      if self.step >= self.size:
+        self.step = self.step % self.size
+      result.append(self.files[self.step])
+      self.step+=1
+    return result
+
 
 # Plots min, max and mean + standard deviation bars of a population over time
 def lineplot(xs, ys_population, title, path='', xaxis='episode'):
