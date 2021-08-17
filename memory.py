@@ -67,8 +67,8 @@ class MineExperienceReplay(ExperienceReplay):
 
   def append(self, observation, action, reward, done):
 
-    self.vectors[self.idx] = observation['vector']
-    self.observations[self.idx] = observation['pov']  # Decentre and discretise visual observations (to save memory)
+    self.vectors[self.idx] = observation[1]
+    self.observations[self.idx] = observation[0]  # Decentre and discretise visual observations (to save memory)
     self.actions[self.idx] = action
     self.rewards[self.idx] = reward
     self.nonterminals[self.idx] = not done
@@ -83,6 +83,6 @@ class MineExperienceReplay(ExperienceReplay):
     observations = torch.as_tensor(self.observations[vec_idxs].astype(np.float32))
     if not self.symbolic_env:
       preprocess_observation_(observations, self.bit_depth)  # Undo discretisation for visual observations
-    return (observations.reshape(L, n, *observations.shape[1:]), self.states[vec_idxs].reshape(L, n, -1)), self.actions[vec_idxs].reshape(L, n, -1), self.rewards[vec_idxs].reshape(L, n), self.nonterminals[vec_idxs].reshape(L, n, 1)
+    return observations.reshape(L, n, *observations.shape[1:]), self.vectors[vec_idxs].reshape(L, n, -1), self.actions[vec_idxs].reshape(L, n, -1), self.rewards[vec_idxs].reshape(L, n), self.nonterminals[vec_idxs].reshape(L, n, 1)
 
 

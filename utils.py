@@ -4,9 +4,19 @@ import numpy as np
 import plotly
 from plotly.graph_objs import Scatter
 from plotly.graph_objs.scatter import Line
+import random
+import pandas as pd
 
 def absolute_file_paths(directory):
     return [os.path.join(directory, path) for path in os.listdir(directory)]
+
+def absolute_file_paths_with_filter(directory, filter_csv="MineRL-ObtainDiamond-labels.csv"):
+    csv = pd.read_csv(filter_csv)
+    # print(csv)
+    good_trajectory = csv.loc[csv['label']=="good"]["trajectory"].tolist()
+    perfect_trajectory = csv.loc[csv['label']=="perfect"]["trajectory"].tolist()
+    result = good_trajectory + perfect_trajectory
+    return [os.path.join(directory, path) for path in result]
 
 class Cycle_Replay:
 
@@ -15,6 +25,7 @@ class Cycle_Replay:
       if is_path:
         files = absolute_file_paths(files)
       self.files = files[:]
+      random.shuffle(self.files)
       self.size = len(files)
   def get_name(self,num=1):
     result = []
